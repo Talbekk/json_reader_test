@@ -12,7 +12,6 @@ function App() {
           Edit <code>src/App.js</code> and save to reload.
         </p>
         <Container/>
-          Learn React
       </header>
     </div>
   );
