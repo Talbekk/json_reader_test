@@ -36,3 +36,20 @@
     transform: rotate(360deg);
   }
 }
+
+.displayJsonWrapper{
+  color: black;
+  width: 90%;
+  word-wrap: break-word;
+  font-size: 16px;
+  margin: 0 auto;
+}
+
+.json-container{
+  border: 1px solid #A68A5C;
+  max-width: 35%;
+  min-height: 100px;
+  padding: 5px 20px;
+  margin: 50px auto;
+  background-color: white;
+}

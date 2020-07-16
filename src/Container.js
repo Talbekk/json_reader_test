@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import './App.css';
 
-function Container(){
+function Container(props){
 
     const [jsonEntry, setJsonEntry] = useState("");
     const [jsonObject, setJsonObject] = useState({});
@@ -29,8 +29,23 @@ function Container(){
         console.log("hotel name", hotelName);
     }
 
-    function getLinks(){
-        return null;
+    function changeLinks(){
+        jsonObject['hotelBookingPage'] = "batman";
+        jsonObject['hotels'][0]['hotelBookingPage'] = "batman";
+        jsonObject['pages'].forEach((page) => {
+            if (page['id'] === "BOOK_NOW_PAGE"){
+                page['url'] = "batman";
+            }
+        })
+        jsonObject['pages'].forEach((page) => {
+            if(page.components){
+                console.log("has components", page['id']);
+            }
+        })
+    }
+
+    function getJson(){
+       props.addJsonToScreen(JSON.stringify(jsonObject));
     }
 
     return (
@@ -44,7 +59,8 @@ function Container(){
                 <button onClick={handleClick}>Parse The Beast!</button>
                 <button onClick={getHotelName}>Get That Hotel Name!</button>
                 <button onClick={sendName}>Show The Name</button>
-                <button onClick={getLinks}>Show The Name</button>
+                <button onClick={changeLinks}>Change Links</button>
+                <button onClick={getJson}>Get Json</button>
             </div>
         </div>
         </>
