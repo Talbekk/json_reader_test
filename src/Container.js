@@ -39,7 +39,13 @@ function Container(props){
         })
         jsonObject['pages'].forEach((page) => {
             if(page.components){
-                console.log("has components", page['id']);
+                page.components.forEach((component) => {
+                    if(component.type === "BUTTON_COMPONENT"){
+                        if(component.buttonType === "LINK") {
+                        component['value'] = "batman";
+                        }
+                    }
+                })
             }
         })
     }
