@@ -45,6 +45,15 @@ function Container(props){
                         component['value'] = "batman";
                         }
                     }
+                    if(component.type === "CARD_COMPONENT"){
+                        component.components.forEach((comp) => {
+                            if (comp.type === "BUTTON_COMPONENT"){
+                                if(comp.buttonType === "LINK") {
+                                    comp['value'] = "batman";
+                                    }
+                            }
+                        })
+                    }
                 })
             }
         })
