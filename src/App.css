@@ -53,3 +53,14 @@
   margin: 50px auto;
   background-color: white;
 }
+
+.hotel-code-input{
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  max-width: 25%;
+}
+
+.hotel-code-input > * {
+  margin-bottom: 10px;
+}
