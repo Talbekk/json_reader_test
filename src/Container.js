@@ -33,7 +33,7 @@ function Container(props){
         jsonObject['hotelBookingPage'] = "batman";
         jsonObject['hotels'][0]['hotelBookingPage'] = "batman";
         jsonObject['pages'].forEach((page) => {
-            if (page['id'] === "BOOK_NOW_PAGE"){
+            if (page['type'] === "LINK_PAGE"){
                 page['url'] = "batman";
             }
         })
@@ -51,6 +51,33 @@ function Container(props){
                                 if(comp.buttonType === "LINK") {
                                     comp['value'] = "batman";
                                     }
+                            }
+                            if(component.type === "ACCORDION_COMPONENT"){
+                                component.components.forEach((comp) => {
+                                    if (comp.type === "BUTTON_COMPONENT"){
+                                        if(comp.buttonType === "LINK") {
+                                            comp['value'] = "batman";
+                                            }
+                                    }
+                                })
+                            }
+                        })
+                    }
+                    if(component.type === "ACCORDION_COMPONENT"){
+                        component.components.forEach((comp) => {
+                            if (comp.type === "BUTTON_COMPONENT"){
+                                if(comp.buttonType === "LINK") {
+                                    comp['value'] = "batman";
+                                    }
+                            }
+                            if(comp.type === "ACCORDION_COMPONENT"){
+                                comp.components.forEach((banana) => {
+                                    if (banana.type === "BUTTON_COMPONENT"){
+                                        if(banana.buttonType === "LINK") {
+                                            banana['value'] = "batman";
+                                            }
+                                    }
+                                })
                             }
                         })
                     }
