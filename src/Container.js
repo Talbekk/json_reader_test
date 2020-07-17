@@ -13,10 +13,6 @@ function Container(props){
         setJsonObject(obj);
     }
 
-    function checkEndOfString(string){
-        if (string.charAt(string.length-1) !== "/") { string = string + "/";}
-    }
-
     function getformattedEnding(string){
         const splitString = string.split(" ");
         const formattedSplitString = splitString.map((word) => {
@@ -26,7 +22,7 @@ function Container(props){
         return rejoinedString;
     }
 
-    function getSimpleFormattedString(string, ending){
+    function getSimpleFormattedString(string, ending, extra){
         let endOfString = "";
         if (ending !== hotelBooking){
         const formattedEnding = getformattedEnding(ending);
@@ -35,15 +31,33 @@ function Container(props){
              endOfString = firstBlock + ending;
         }
         
-        (string.charAt(string.length-1) === "/") ? console.log("true", ending): console.log("false", ending);
         return (string.charAt(string.length-1) === "/") ?
          string + endOfString
         : 
         string + "/" + endOfString;
     }
 
+    function checkForLinkInComponent(component){
+        if (component.type === "BUTTON_COMPONENT"){
+        if((component.buttonType === "LINK") || (component.buttonType === "DOWNLOAD")) {
+            component['value'] = getSimpleFormattedString(component['value'], component.line1);
+            }
+        }
+    }
+
+    function checkAccordionComponents(comp){
+        comp.components.forEach((com) => {
+            checkForLinkInComponent(com);
+            if(com.type === "ACCORDION_COMPONENT"){
+                com.components.forEach((banana) => {
+                    checkForLinkInComponent(banana);
+                })
+            }
+            
+        })
+    }
+
     function changeLinks(){
-        (checkEndOfString(jsonObject['hotelBookingPage']));
         jsonObject['hotelBookingPage'] = getSimpleFormattedString(jsonObject['hotelBookingPage'], hotelBooking);
         jsonObject['hotels'][0]['hotelBookingPage'] = getSimpleFormattedString(jsonObject['hotels'][0]['hotelBookingPage'], hotelBooking);
         jsonObject['pages'].forEach((page) => {
@@ -55,55 +69,18 @@ function Container(props){
             if(page.components){
                 page.components.forEach((component) => {
                     if(component.type === "BUTTON_COMPONENT"){
-                        if((component.buttonType === "LINK") || (component.buttonType === "DOWNLOAD")) {
-                        component['value'] = getSimpleFormattedString(component['value'], component.line1);
-                        }
+                        checkForLinkInComponent(component);
                     }
                     if(component.type === "CARD_COMPONENT"){
                         component.components.forEach((comp) => {
-                            if (comp.type === "BUTTON_COMPONENT"){
-                                if((comp.buttonType === "LINK") || (comp.buttonType === "DOWNLOAD")) {
-                                    comp['value'] = getSimpleFormattedString(comp['value'], comp.line1);
-                                    }
-                            }
+                            checkForLinkInComponent(comp);
                             if(comp.type === "ACCORDION_COMPONENT"){
-                                comp.components.forEach((com) => {
-                                    if (com.type === "BUTTON_COMPONENT"){
-                                        if((com.buttonType === "LINK") || (com.buttonType === "DOWNLOAD")) {
-                                            com['value'] = getSimpleFormattedString(com['value'], com.line1);
-                                            }
-                                    }
-                                    if(com.type === "ACCORDION_COMPONENT"){
-                                        com.components.forEach((banana) => {
-                                            if (banana.type === "BUTTON_COMPONENT"){
-                                                if((banana.buttonType === "LINK") || (banana.buttonType === "DOWNLOAD")) {
-                                                    banana['value'] = getSimpleFormattedString(banana['value'], banana.line1);
-                                                    }
-                                            }
-                                        })
-                                    }
-                                    
-                                })
+                                checkAccordionComponents(comp);
                             }
                         })
                     }
                     if(component.type === "ACCORDION_COMPONENT"){
-                        component.components.forEach((comp) => {
-                            if (comp.type === "BUTTON_COMPONENT"){
-                                if((comp.buttonType === "LINK") || (comp.buttonType === "DOWNLOAD")) {
-                                    comp['value'] = getSimpleFormattedString(comp['value'], comp.line1);
-                                    }
-                            }
-                            if(comp.type === "ACCORDION_COMPONENT"){
-                                comp.components.forEach((banana) => {
-                                    if (banana.type === "BUTTON_COMPONENT"){
-                                        if((banana.buttonType === "LINK") || (banana.buttonType === "DOWNLOAD")) {
-                                            banana['value'] = getSimpleFormattedString(banana['value'], banana.line1);
-                                            }
-                                    }
-                                })
-                            }
-                        })
+                        checkAccordionComponents(component)
                     }
                 })
             }
