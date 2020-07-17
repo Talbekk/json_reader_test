@@ -15,7 +15,7 @@ function Container(props){
 
     function handleSubmit(e){
         e.preventDefault();
-        setFirstBlock("?utm_source=criton&utm_medium+mobile-apps&utm_campaign+" + hotelCode);
+        setFirstBlock("?utm_source=criton&utm_medium=mobile-apps&utm_campaign=" + hotelCode + "-");
     }
 
     function checkEndOfString(string){
@@ -24,8 +24,8 @@ function Container(props){
 
     function changeLinks(){
         (checkEndOfString(jsonObject['hotelBookingPage']))? console.log("true"): console.log("false");
-        jsonObject['hotelBookingPage'] = jsonObject['hotelBookingPage'] + firstBlock + "-hotelBookingPage";
-        jsonObject['hotels'][0]['hotelBookingPage'] = jsonObject['hotels'][0]['hotelBookingPage'] + firstBlock + "-hotelBookingPage";
+        jsonObject['hotelBookingPage'] = jsonObject['hotelBookingPage'] + firstBlock + "hotelBookingPage";
+        jsonObject['hotels'][0]['hotelBookingPage'] = jsonObject['hotels'][0]['hotelBookingPage'] + firstBlock + "hotelBookingPage";
         jsonObject['pages'].forEach((page) => {
             if (page['type'] === "LINK_PAGE"){
                 page['url'] = page['url'] + firstBlock + page.line1;
