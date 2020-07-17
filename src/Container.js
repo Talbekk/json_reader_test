@@ -5,7 +5,6 @@ function Container(props){
 
     const [jsonEntry, setJsonEntry] = useState("");
     const [jsonObject, setJsonObject] = useState({});
-    const [hotelCode, setHotelCode] = useState("");
     const [firstBlock, setFirstBlock] = useState("?utm_source=criton&utm_medium=mobile-apps&utm_campaign=");
     const hotelBooking = useState("hotel-booking-page");
 
@@ -118,13 +117,6 @@ function Container(props){
     return (
         <>
         <div>
-            {/* <div>
-                <form className="hotel-code-input" onSubmit={handleSubmit}>
-                <label>Enter Your Hotel Code</label>
-                <input type="text" value={hotelCode} onChange={(e) => setHotelCode(e.target.value)}/>
-                <button type="submit">Save It Now!</button>
-                </form>
-            </div> */}
             <div>
 				<textarea rows="30" cols="70" value={jsonEntry} onChange={(e) => setJsonEntry(e.target.value)}></textarea>
 			</div>
