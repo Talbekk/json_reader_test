@@ -14,17 +14,28 @@ function Container(props){
         setJsonObject(obj);
     }
 
-    function handleSubmit(e){
-        e.preventDefault();
-        setFirstBlock("?utm_source=criton&utm_medium=mobile-apps&utm_campaign=");
-    }
-
     function checkEndOfString(string){
         if (string.charAt(string.length-1) !== "/") { string = string + "/";}
     }
 
+    function getformattedEnding(string){
+        const splitString = string.split(" ");
+        const formattedSplitString = splitString.map((word) => {
+            return word.toLowerCase();
+        });
+        const rejoinedString = formattedSplitString.join("-");
+        return rejoinedString;
+    }
+
     function getSimpleFormattedString(string, ending){
-        const endOfString = firstBlock + ending;
+        let endOfString = "";
+        if (ending !== hotelBooking){
+        const formattedEnding = getformattedEnding(ending);
+         endOfString = firstBlock + formattedEnding;
+        } else {
+             endOfString = firstBlock + ending;
+        }
+        
         (string.charAt(string.length-1) === "/") ? console.log("true", ending): console.log("false", ending);
         return (string.charAt(string.length-1) === "/") ?
          string + endOfString
