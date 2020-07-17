@@ -6,7 +6,7 @@ function Container(props){
     const [jsonEntry, setJsonEntry] = useState("");
     const [jsonObject, setJsonObject] = useState({});
     const [hotelCode, setHotelCode] = useState("");
-    const [firstBlock, setFirstBlock] = useState("")
+    const [firstBlock, setFirstBlock] = useState("?utm_source=criton&utm_medium=mobile-apps&utm_campaign=")
 
     function handleClick(){
         const obj = JSON.parse(jsonEntry);
@@ -15,16 +15,25 @@ function Container(props){
 
     function handleSubmit(e){
         e.preventDefault();
-        setFirstBlock("?utm_source=criton&utm_medium=mobile-apps&utm_campaign=" + hotelCode + "-");
+        setFirstBlock("?utm_source=criton&utm_medium=mobile-apps&utm_campaign=");
     }
 
     function checkEndOfString(string){
-        return (string.charAt(string.length-1) === "/") ? true : false;
+        if (string.charAt(string.length-1) !== "/") { string = string + "/";}
+    }
+
+    function getSimpleFormattedString(string){
+        const endOfString = firstBlock + "hotel-booking-page";
+        return (string.charAt(string.length-1) === "/") ?
+         string + endOfString
+        : 
+        string + "/" + endOfString;
     }
 
     function changeLinks(){
-        (checkEndOfString(jsonObject['hotelBookingPage']))? console.log("true"): console.log("false");
-        jsonObject['hotelBookingPage'] = jsonObject['hotelBookingPage'] + firstBlock + "hotelBookingPage";
+        (checkEndOfString(jsonObject['hotelBookingPage']));
+        jsonObject['hotelBookingPage'] = getSimpleFormattedString(jsonObject['hotelBookingPage']);
+        // jsonObject['hotelBookingPage'] = jsonObject['hotelBookingPage'] + "/" + firstBlock + "hotelBookingPage";
         jsonObject['hotels'][0]['hotelBookingPage'] = jsonObject['hotels'][0]['hotelBookingPage'] + firstBlock + "hotelBookingPage";
         jsonObject['pages'].forEach((page) => {
             if (page['type'] === "LINK_PAGE"){
