@@ -12,7 +12,7 @@ export default function DisplayJson(props) {
     return (
         <>
         <section>
-            <h4>Your JSON</h4>
+            <h4>Your Wonderful JSON</h4>
             <button onClick={handleClick}>Copy JSON to clipboard</button>
             <button onClick={props.clearClipboard}>Clear Clipboard</button>
             <div className="json-container">
