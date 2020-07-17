@@ -21,9 +21,7 @@ function clearClipboard(){
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
+        <h2>Super Awesome Fantastic JSON Parsing Link Attaching Magical Machine</h2>
         <Container addJsonToScreen={addJsonToScreen}/>
         <DisplayJson submittedJson={submittedJson} clearClipboard={clearClipboard}/>
       </header>
