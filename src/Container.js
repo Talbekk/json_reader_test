@@ -14,11 +14,29 @@ function Container(props){
 
     function getformattedEnding(string){
         const splitString = string.split(" ");
+        console.log("split string", splitString);
+        const filteredString = splitString.map((word) => {
+            return removeUnecessaryCharacters(word);
+        })
         const formattedSplitString = splitString.map((word) => {
             return word.toLowerCase();
         });
+        console.log("filteredString", filteredString);
         const rejoinedString = formattedSplitString.join("-");
         return rejoinedString;
+    }
+
+    function removeUnecessaryCharacters(word){
+        const splitWord = word.split("");
+        const unecessaryCharacters = [",", ".", ":", ";", "?", "!"];
+        if (unecessaryCharacters.includes(splitWord[0])) {
+            splitWord.shift();
+        }
+        if (unecessaryCharacters.includes(splitWord[splitWord.length-1])){
+            splitWord.pop();
+        }
+        const rejoinedWord = splitWord.join("");
+        return rejoinedWord;
     }
 
     function getSimpleFormattedString(string, ending, extraInfo){
@@ -28,6 +46,9 @@ function Container(props){
         const formattedEnding = getformattedEnding(ending);
         if(extraInfo === undefined){
          endOfString = firstBlock + formattedEnding;
+        } else {
+            const formattedExtraInfo = getformattedEnding(extraInfo);
+            endOfString = firstBlock + formattedEnding + "-" + formattedExtraInfo;
         }
         } else {
             if(extraInfo === undefined){
@@ -41,10 +62,15 @@ function Container(props){
         string + "/" + endOfString;
     }
 
-    function checkForLinkInComponent(component){
+    function checkForLinkInComponent(component, parentComponent){
         if (component.type === "BUTTON_COMPONENT"){
             if((component.buttonType === "LINK") || (component.buttonType === "DOWNLOAD")) {
-                component['value'] = getSimpleFormattedString(component['value'], component.line1);
+                if(parentComponent.type === "ACCORDION_COMPONENT"){
+                component['value'] = getSimpleFormattedString(component['value'], component.line1, parentComponent.title);
+                }
+                if(parentComponent.type === "CONTENT_PAGE"){
+                    component['value'] = getSimpleFormattedString(component['value'], component.line1, parentComponent.line1);
+                    }
                 }
         }
         if (component.type === "ACCORDION COMPONENT"){
@@ -54,10 +80,10 @@ function Container(props){
 
     function checkAccordionComponents(comp){
         comp.components.forEach((com) => {
-            checkForLinkInComponent(com);
+            checkForLinkInComponent(com, comp);
             if(com.type === "ACCORDION_COMPONENT"){
                 com.components.forEach((banana) => {
-                    checkForLinkInComponent(banana);
+                    checkForLinkInComponent(banana, com);
                 })
             }
             
@@ -76,11 +102,11 @@ function Container(props){
             if(page.components){
                 page.components.forEach((component) => {
                     if(component.type === "BUTTON_COMPONENT"){
-                        checkForLinkInComponent(component);
+                        checkForLinkInComponent(component, page);
                     }
                     if(component.type === "CARD_COMPONENT"){
                         component.components.forEach((comp) => {
-                            checkForLinkInComponent(comp);
+                            checkForLinkInComponent(comp, page);
                             if(comp.type === "ACCORDION_COMPONENT"){
                                 checkAccordionComponents(comp);
                             }
