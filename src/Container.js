@@ -5,8 +5,7 @@ function Container(props){
 
     const [jsonEntry, setJsonEntry] = useState("");
     const [jsonObject, setJsonObject] = useState({});
-    const [firstBlock, setFirstBlock] = useState("?utm_source=criton&utm_medium=mobile-apps&utm_campaign=");
-    const hotelBooking = useState("hotel-booking-page");
+    const [hotelBooking, setHotelBooking] = useState("hotel-booking-page");
 
     function handleClick(){
         const obj = JSON.parse(jsonEntry);
@@ -22,13 +21,18 @@ function Container(props){
         return rejoinedString;
     }
 
-    function getSimpleFormattedString(string, ending, extra){
+    function getSimpleFormattedString(string, ending, extraInfo){
+        const firstBlock = "?utm_source=criton&utm_medium=mobile-apps&utm_campaign=";
         let endOfString = "";
         if (ending !== hotelBooking){
         const formattedEnding = getformattedEnding(ending);
+        if(extraInfo === undefined){
          endOfString = firstBlock + formattedEnding;
+        }
         } else {
+            if(extraInfo === undefined){
              endOfString = firstBlock + ending;
+            }
         }
         
         return (string.charAt(string.length-1) === "/") ?
@@ -39,9 +43,12 @@ function Container(props){
 
     function checkForLinkInComponent(component){
         if (component.type === "BUTTON_COMPONENT"){
-        if((component.buttonType === "LINK") || (component.buttonType === "DOWNLOAD")) {
-            component['value'] = getSimpleFormattedString(component['value'], component.line1);
-            }
+            if((component.buttonType === "LINK") || (component.buttonType === "DOWNLOAD")) {
+                component['value'] = getSimpleFormattedString(component['value'], component.line1);
+                }
+        }
+        if (component.type === "ACCORDION COMPONENT"){
+            checkAccordionComponents(component);
         }
     }
 
