@@ -6,26 +6,30 @@ function Container(props){
     const [jsonEntry, setJsonEntry] = useState("");
     const [jsonObject, setJsonObject] = useState({});
     const [hotelBooking, setHotelBooking] = useState("hotel-booking-page");
+    // const [hotelCode, setHotelCode] = useState(null);
+    // const [hotelCount, setHotelCount] = useState(1);
 
+    // turns the input into a js object
     function handleClick(){
         const obj = JSON.parse(jsonEntry);
         setJsonObject(obj);
+        // setHotelCount(obj['hotels'].length);
     }
 
+    // this filters out unwanted characters like commas and makes everything lowercase
     function getformattedEnding(string){
         const splitString = string.split(" ");
-        console.log("split string", splitString);
         const filteredString = splitString.map((word) => {
             return removeUnecessaryCharacters(word);
         })
-        const formattedSplitString = splitString.map((word) => {
+        const formattedSplitString = filteredString.map((word) => {
             return word.toLowerCase();
         });
-        console.log("filteredString", filteredString);
         const rejoinedString = formattedSplitString.join("-");
         return rejoinedString;
     }
 
+    // filters out any unwanted characters
     function removeUnecessaryCharacters(word){
         const splitWord = word.split("");
         const unecessaryCharacters = [",", ".", ":", ";", "?", "!"];
@@ -39,20 +43,58 @@ function Container(props){
         return rejoinedWord;
     }
 
-    function getSimpleFormattedString(string, ending, extraInfo){
+    function getFormattedString(string, ending, extraInfo){
+        const hotelCount = jsonObject['hotels'].length;
+        const hotelCode = getHotelCode(extraInfo, ending);
         const firstBlock = "?utm_source=criton&utm_medium=mobile-apps&utm_campaign=";
+        let endOfString = "";
+            console.log("hotelbooking");
+            (hotelCount > 1) ? 
+         endOfString = firstBlock + hotelCode + ending
+         :
+         endOfString = firstBlock + "-" + ending;
+
+         return (string.charAt(string.length-1) === "/") ?
+         string + endOfString
+        : 
+        string + "/" + endOfString;
+    }
+
+    // creates the utm tags for the end of the link
+    function getSimpleFormattedString(component, extraInfo){
+        const string = component['value'];
+        const ending = component.line1;
+        const hotelCount = jsonObject['hotels'].length;
+        const firstBlock = "?utm_source=criton&utm_medium=mobile-apps&utm_campaign=";
+        const hotelCode = getHotelCode(extraInfo);
         let endOfString = "";
         if (ending !== hotelBooking){
         const formattedEnding = getformattedEnding(ending);
         if(extraInfo === undefined){
+            console.log("first", hotelCode);
+         (hotelCount > 1) ? 
+         endOfString = firstBlock + hotelCode + formattedEnding
+         : 
          endOfString = firstBlock + formattedEnding;
         } else {
-            const formattedExtraInfo = getformattedEnding(extraInfo);
-            endOfString = firstBlock + formattedEnding + "-" + formattedExtraInfo;
+            console.log("accordion type", extraInfo.type);
+            const formattedExtraInfo = (extraInfo.type === "ACCORDION_COMPONENT") ? 
+            getformattedEnding(extraInfo.title)
+            :
+            getformattedEnding(extraInfo.line1);
+            (hotelCount > 1) ? 
+            endOfString = firstBlock + hotelCode + formattedExtraInfo + "-" + formattedEnding
+            :
+            endOfString = firstBlock + formattedExtraInfo + "-" + formattedEnding
         }
         } else {
+            console.log("third", hotelCode);
             if(extraInfo === undefined){
-             endOfString = firstBlock + ending;
+                console.log("hotelbooking");
+                (hotelCount > 1) ? 
+             endOfString = firstBlock + hotelCode + ending
+             :
+             endOfString = firstBlock + "-" + ending
             }
         }
         
@@ -61,15 +103,32 @@ function Container(props){
         : 
         string + "/" + endOfString;
     }
+    // if there are more than one hotel, this function will set the hotelname for each page.
+    function getHotelCode(extraInfo, ending){
+        const hotelCount = jsonObject['hotels'].length;
+        if(hotelCount > 1) {
+            console.log("extraInfo", extraInfo);
+            if ((extraInfo !== undefined) && ((extraInfo.type === "CONTENT_PAGE") || (ending === "hotel-booking-page"))){
+        const splitID = (ending === "hotel-booking-page") ?
+        extraInfo.split(" ")
+        :
+        extraInfo.id.split("_");
+        const hotelCodeName = splitID[0] + "-";
+        console.log("hotel code name", hotelCodeName);
+        return hotelCodeName.toLowerCase();
+        } else { return ""; }
+    }
+    }
 
+    // checks if the component is a button link component and then creates the newly formatted one
     function checkForLinkInComponent(component, parentComponent){
         if (component.type === "BUTTON_COMPONENT"){
             if((component.buttonType === "LINK") || (component.buttonType === "DOWNLOAD")) {
                 if(parentComponent.type === "ACCORDION_COMPONENT"){
-                component['value'] = getSimpleFormattedString(component['value'], component.line1, parentComponent.title);
+                component['value'] = getSimpleFormattedString(component, parentComponent);
                 }
                 if(parentComponent.type === "CONTENT_PAGE"){
-                    component['value'] = getSimpleFormattedString(component['value'], component.line1, parentComponent.line1);
+                    component['value'] = getSimpleFormattedString(component, parentComponent);
                     }
                 }
         }
@@ -77,8 +136,8 @@ function Container(props){
             checkAccordionComponents(component);
         }
     }
-
-    function checkAccordionComponents(comp){
+    // checks accordions within accordions.
+    function checkAccordionComponents(comp, page){
         comp.components.forEach((com) => {
             checkForLinkInComponent(com, comp);
             if(com.type === "ACCORDION_COMPONENT"){
@@ -90,12 +149,14 @@ function Container(props){
         })
     }
 
+    // changes the links 
     function changeLinks(){
-        jsonObject['hotelBookingPage'] = getSimpleFormattedString(jsonObject['hotelBookingPage'], hotelBooking);
-        jsonObject['hotels'][0]['hotelBookingPage'] = getSimpleFormattedString(jsonObject['hotels'][0]['hotelBookingPage'], hotelBooking);
+        jsonObject['hotelBookingPage'] = getFormattedString(jsonObject['hotelBookingPage'], hotelBooking);
+        jsonObject['hotels'][0]['hotelBookingPage'] = getFormattedString(jsonObject['hotels'][0]['hotelBookingPage'], hotelBooking, jsonObject['hotels'][0]['title']);
         jsonObject['pages'].forEach((page) => {
+            getHotelCode(page.id);
             if (page['type'] === "LINK_PAGE"){
-                page['url'] = getSimpleFormattedString(page['url'], page.line1);
+                page['url'] = getFormattedString(page['url'], page.line1, page.id);
             }
         })
         jsonObject['pages'].forEach((page) => {
@@ -113,13 +174,13 @@ function Container(props){
                         })
                     }
                     if(component.type === "ACCORDION_COMPONENT"){
-                        checkAccordionComponents(component)
+                        checkAccordionComponents(component, page)
                     }
                 })
             }
         })
     }
-
+    // gets the json for the display.
     function getJson(){
        props.addJsonToScreen(JSON.stringify(jsonObject));
     }
