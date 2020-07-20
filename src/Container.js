@@ -47,6 +47,9 @@ function Container(props){
         const hotelCount = jsonObject['hotels'].length;
         const hotelCode = getHotelCode(extraInfo, ending);
         const firstBlock = "?utm_source=criton&utm_medium=mobile-apps&utm_campaign=";
+        if (ending !== "hotel-booking-page"){
+            ending = getformattedEnding(ending);
+        }
         let endOfString = "";
             console.log("hotelbooking");
             (hotelCount > 1) ? 
@@ -61,12 +64,15 @@ function Container(props){
     }
 
     // creates the utm tags for the end of the link
-    function getSimpleFormattedString(component, extraInfo){
+    function getSimpleFormattedString(component, extraInfo, pageComponent){
         const string = component['value'];
         const ending = component.line1;
         const hotelCount = jsonObject['hotels'].length;
         const firstBlock = "?utm_source=criton&utm_medium=mobile-apps&utm_campaign=";
-        const hotelCode = getHotelCode(extraInfo);
+        const hotelCode = (pageComponent === undefined) ? 
+        getHotelCode(extraInfo)
+        :
+        getHotelCode(pageComponent)
         let endOfString = "";
         if (ending !== hotelBooking){
         const formattedEnding = getformattedEnding(ending);
@@ -108,7 +114,7 @@ function Container(props){
         const hotelCount = jsonObject['hotels'].length;
         if(hotelCount > 1) {
             console.log("extraInfo", extraInfo);
-            if ((extraInfo !== undefined) && ((extraInfo.type === "CONTENT_PAGE") || (ending === "hotel-booking-page"))){
+            if ((extraInfo !== undefined) && ((extraInfo.type === "CONTENT_PAGE" || "LIST_PAGE") || (ending === "hotel-booking-page"))){
         const splitID = (ending === "hotel-booking-page") ?
         extraInfo.split(" ")
         :
@@ -121,11 +127,11 @@ function Container(props){
     }
 
     // checks if the component is a button link component and then creates the newly formatted one
-    function checkForLinkInComponent(component, parentComponent){
+    function checkForLinkInComponent(component, parentComponent, pageComponent){
         if (component.type === "BUTTON_COMPONENT"){
             if((component.buttonType === "LINK") || (component.buttonType === "DOWNLOAD")) {
                 if(parentComponent.type === "ACCORDION_COMPONENT"){
-                component['value'] = getSimpleFormattedString(component, parentComponent);
+                component['value'] = getSimpleFormattedString(component, parentComponent, pageComponent);
                 }
                 if(parentComponent.type === "CONTENT_PAGE"){
                     component['value'] = getSimpleFormattedString(component, parentComponent);
@@ -133,16 +139,16 @@ function Container(props){
                 }
         }
         if (component.type === "ACCORDION COMPONENT"){
-            checkAccordionComponents(component);
+            checkAccordionComponents(component, pageComponent);
         }
     }
     // checks accordions within accordions.
     function checkAccordionComponents(comp, page){
         comp.components.forEach((com) => {
-            checkForLinkInComponent(com, comp);
+            checkForLinkInComponent(com, comp, page);
             if(com.type === "ACCORDION_COMPONENT"){
                 com.components.forEach((banana) => {
-                    checkForLinkInComponent(banana, com);
+                    checkForLinkInComponent(banana, com, page);
                 })
             }
             
@@ -153,14 +159,12 @@ function Container(props){
     function changeLinks(){
         jsonObject['hotelBookingPage'] = getFormattedString(jsonObject['hotelBookingPage'], hotelBooking);
         jsonObject['hotels'].forEach((hotel) => {
-            console.log("hotel number", hotel);
             hotel['hotelBookingPage'] = getFormattedString(hotel['hotelBookingPage'], hotelBooking, hotel['title']);
         })
         jsonObject['hotels'][0]['hotelBookingPage'] = getFormattedString(jsonObject['hotels'][0]['hotelBookingPage'], hotelBooking, jsonObject['hotels'][0]['title']);
         jsonObject['pages'].forEach((page) => {
-            getHotelCode(page.id);
             if (page['type'] === "LINK_PAGE"){
-                page['url'] = getFormattedString(page['url'], page.line1, page.id);
+                page['url'] = getFormattedString(page['url'], page.line1, page);
             }
         })
         jsonObject['pages'].forEach((page) => {
@@ -173,7 +177,7 @@ function Container(props){
                         component.components.forEach((comp) => {
                             checkForLinkInComponent(comp, page);
                             if(comp.type === "ACCORDION_COMPONENT"){
-                                checkAccordionComponents(comp);
+                                checkAccordionComponents(comp, page);
                             }
                         })
                     }
