@@ -157,7 +157,7 @@ function Container(props){
 
     // changes the links 
     function changeLinks(){
-        jsonObject['hotelBookingPage'] = getFormattedString(jsonObject['hotelBookingPage'], hotelBooking);
+        if (jsonObject['hotelBookingPage'] !== null) { getFormattedString(jsonObject['hotelBookingPage'], hotelBooking) };
         jsonObject['hotels'].forEach((hotel) => {
             hotel['hotelBookingPage'] = getFormattedString(hotel['hotelBookingPage'], hotelBooking, hotel['title']);
         })
